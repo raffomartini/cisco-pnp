@@ -30,6 +30,8 @@ ip dhcp pool Vlan1
     negotiation auto
     shutdown
    ```
+   I have tried to force the `no shutdown` on the configuration, but this in turn made the pnp process fail AND shutted down the port anyway - **_investigations in process_**
+   
 #### 2- In 16.5.1a weird behaviours are observed if the configuration for the port used for pnp is not in switchport
   In my case this is the intended configuration:
 ```
