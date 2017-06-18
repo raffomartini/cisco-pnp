@@ -1,6 +1,7 @@
 # ISIS configuration for ECMP
 
-THe purpose is to configure ISIS for ECMP.
+The purpose is to configure ISIS for ECMP.
+The c3650 connects back to the lab using EIGRP.
 My topology is very simple:
 ```
 (LAB)---|c3650| --- |c3850-1|
@@ -9,6 +10,7 @@ My topology is very simple:
 ```
 
 I've decided to use /30 networks for the p2p links, in the range 192.168.254.0 - 255
+All devices have a loopback, I am using the subnet 10.102.0.0/24 for the loopbacks address.
 
 The configuration is done in 2 steps:
   * router configuration
@@ -36,7 +38,33 @@ router isis
 ```
 **Note:** without the bfd command the adjacency will never go up on a cat3k switch.
 
-### Filter ECMP link
+## Redistribuite the default route
+As this is a stub network, I am happy with just redistributing the default route (again, in the interest of not cluttering the route table with pointless entries.
+```
+router isis
+ default-information originate
+```
+
+## Advertise back to the LAB only the loopback subnet
+I use some eigrp route summarisation here.
+It is done in 2 steps: 
+  1. first you define the summary route in the network statement for the router
+  2. you then use the summary route feature on the interface
+**router configuration**
+```
+router eigrp 100
+ network 10.102.0.0 0.0.0.255
+```
+
+**interface configuration**
+```
+interface Vlan1
+ ip summary-address eigrp 100 10.102.0.0 255.255.255.0
+```
+
+
+
+## Filter ECMP link
 Normally I would see  all the point to point links in the routing table (ipv6 woud solve this with link local addresses).
 This is cluttering my routing table with destination I don't want to reach (I'm ok to go to the loopback if I have to):
 ```
