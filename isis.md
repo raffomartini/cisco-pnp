@@ -54,7 +54,9 @@ It is done in 2 steps:
 ```
 router eigrp 100
  network 10.102.0.0 0.0.0.255
+ eigrp stub summary
 ```
+Note I have also configured the router as stub summar to only advertise the redistributed route back to the lab.
 
 **interface configuration**
 ```
